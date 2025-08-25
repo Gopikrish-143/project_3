@@ -3,7 +3,8 @@ const dotenv = require('dotenv').config();
 const cors = require('cors');
 const dbConnect = require('./config/db');
 const authRoutes = require('./routes/authRoutes');
-const __dirname1 = path.resolve(); 
+const path = require("path");
+
 
 dbConnect();
 
@@ -11,21 +12,23 @@ dbConnect();
 const app = express();
 
 // middleware
-app.use(cors());
+app.use(cors({
+    origin:"*",
+    credentials:true
+}));
 app.use(express.json());
+
 
 
 // routes
 app.use("/api/auth", authRoutes);
 
-// Serve React frontend
-app.use(express.static(path.join(__dirname1, "dist"))); 
+app.use(express.static(path.join(__dirname, "dist")));
 
-app.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname1, "dist", "index.html")); 
+// Fallback for React Router (SPA support)
+app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "dist", "index.html"));
 });
-
-
 
 //server 
 const PORT = process.env.PORT || 7002;
